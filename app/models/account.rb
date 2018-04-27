@@ -26,8 +26,14 @@ class Account < ApplicationRecord
     super.inquiry
   end
 
+  def append_label(tag)
+    self.labels.create(key: tag.split(/^(\w+?):(\w+)$/)[1], value: tag.split(/^(\w+?):(\w+)$/)[2])
+
+    save
+  end
+
   def after_confirmation
-    level_set(:mail)
+    append_label('email:verified')
     self.state = 'active'
     save
   end
@@ -44,21 +50,6 @@ class Account < ApplicationRecord
     end
 
     update(level: account_level)
-  end
-
-  def level_set(step)
-    case step
-      when :mail
-        self.level = 1
-      when :phone
-        self.level = 2
-      when :identity
-        self.level = 3
-      when :address
-        self.level = 4
-    end
-
-    save
   end
 
   def assign_uid

@@ -32,10 +32,9 @@ private
 
   def set_level_if_state_changed
     if saved_change_to_state? && state == 'rejected'
-      account.level_set(:phone)
       ProfileReviewMailer.rejected(account).deliver_now
     elsif saved_change_to_state? && state == 'approved'
-      account.level_set(:identity)
+      account.append_label('document:verified')
       ProfileReviewMailer.approved(account).deliver_now
     end
   end
